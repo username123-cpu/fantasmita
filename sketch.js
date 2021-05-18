@@ -7,6 +7,7 @@ var grupo_fake
 var grupo_fake_malo
 var grupo_puertas
 var grupo_balcon
+var spooky
 
 function preload(){
   torrePNG = 
@@ -20,6 +21,9 @@ function preload(){
   
   climberPNG = 
     loadImage("climber.png")
+  
+  spooky =
+    loadSound("spooky.wav")
 }
 
 function setup(){
@@ -42,6 +46,8 @@ function setup(){
 function draw(){
   background(0);
   drawSprites();
+  ghost.debug = true;
+  ghost.setCollider("rectangle",-20,50,150,200)
   
   if(gamestate === "start" && keyDown("space")){
     gamestate = "play"
@@ -62,7 +68,7 @@ function draw(){
     
     if(keyDown("left_arrow")){
       ghost.x = ghost.x -5;
-    }
+    }  
     
     if(keyDown("right_arrow")){
       ghost.x = ghost.x + 5;
@@ -75,6 +81,7 @@ function draw(){
     if(ghost.isTouching(grupo_fake_malo)){
       gamestate = "end"
     }
+    spooky.play();
   }
   
   if(gamestate === "end"){
@@ -82,6 +89,16 @@ function draw(){
     ghost.velocityY = 3;
     grupo_puertas.setVelocityYEach(0);
     grupo_balcon.setVelocityYEach(0);
+    textSize(15);
+    fill("white");
+    stroke("black");
+    strokeWeight(5);
+    text("Pulsa enter para continuar",100,300)
+    text("Has perdido :C",130, 250);
+    if(keyDown("enter")){
+      restart();      
+    }
+    spooky.stop();
   }
 }
 
@@ -116,3 +133,13 @@ function puertas(){
   }
 }
 
+function restart(){
+  grupo_puertas.destroyEach();
+  grupo_balcon.destroyEach();
+  grupo_fake.destroyEach();
+  grupo_fake_malo.destroyEach();
+  gamestate = "start";
+  ghost.x = 200;
+  ghost.y = 450;
+  ghost.velocityY = 0;
+}
